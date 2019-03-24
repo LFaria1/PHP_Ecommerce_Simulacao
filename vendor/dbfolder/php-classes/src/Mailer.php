@@ -6,7 +6,7 @@ use Rain\Tpl;
 
 class Mailer{
     const USERNAME="lucassfaria2000@gmail.com";
-    CONST PASSWORD = "73186816";
+    CONST PASSWORD = "";
     CONST FROM = "PHP ECOMMERCE";
 
     private $mail;
