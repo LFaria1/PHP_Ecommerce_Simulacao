@@ -1,5 +1,5 @@
 # PHP_Ecommerce_Simulacao
-Simulação de um e-commerce feito em PHP, com base nas aulas da Udemy/HCode
+Simulação de um e-commerce feito em PHP, com base nas aulas da Udemy/HCode, usando banco de dados SQL. O layout HTML/CSS foi provido pela HCODE Treinamentos
 
 ## Construído com
 * [Composer](https://getcomposer.org/) - Gerenciador de dependências
