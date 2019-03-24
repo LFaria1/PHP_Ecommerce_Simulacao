@@ -5,7 +5,7 @@ namespace dbfolder;
 use Rain\Tpl;
 
 class Mailer{
-    const USERNAME="lucassfaria2000@gmail.com";
+    const USERNAME="";
     CONST PASSWORD = "";
     CONST FROM = "PHP ECOMMERCE";
 
