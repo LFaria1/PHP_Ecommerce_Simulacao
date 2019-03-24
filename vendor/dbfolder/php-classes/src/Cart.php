@@ -171,7 +171,7 @@ class Cart extends Model{
             $parametros = array();
             $parametros['nCdEmpresa'] = '';
             $parametros['sDsSenha'] = '';
-            $parametros['sCepOrigem'] = '04456100';
+            $parametros['sCepOrigem'] = '';
             $parametros['sCepDestino'] = $zipcode;
             $parametros['nVlPeso'] = $total["vlweight"];
             $parametros['nCdFormato'] = '1';
