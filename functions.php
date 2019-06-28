@@ -1,6 +1,6 @@
 <?php
-use \dbfolder\User;
-use \dbfolder\Cart;
+use \model\User;
+use \model\Cart;
 
 function formatPrice($value){
     if(!$value==null){

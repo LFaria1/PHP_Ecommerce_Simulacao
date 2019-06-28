@@ -1,17 +1,20 @@
 <?php
 
 use \Slim\Slim;
-use \dbfolder\Page;
-use \dbfolder\Adminpage;
-use \dbfolder\User;
-use \dbfolder\Category;
-use \dbfolder\Product;
-use \dbfolder\Order;
-use \dbfolder\Cart;
-use dbfolder\OrderStatus;
+use \model\Page;
+use \model\Adminpage;
+use \model\User;
+use \model\Category;
+use \model\Product;
+use \model\Order;
+use \model\Cart;
+use model\OrderStatus;
+
+/**
+ * Admin Page Routes
+ */
 
 $app->get("/admin/users/:iduser/delete",function($iduser){
-
 User::verifyLogin();
 $user = new User();
 $user->get((int)$iduser);

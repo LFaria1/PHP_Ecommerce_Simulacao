@@ -4,34 +4,43 @@ require_once("vendor/autoload.php");
 require_once("functions.php");
 
 use \Slim\Slim;
-use \dbfolder\Page;
-use \dbfolder\Adminpage;
-use \dbfolder\User;
-use \dbfolder\Category;
-use \dbfolder\Product;
-use \dbfolder\Cart;
-use \dbfolder\Address;
-use \dbfolder\Order;
-use \dbfolder\OrderStatus;
+use \model\Page;
+use \model\Adminpage;
+use \model\User;
+use \model\Category;
+use \model\Product;
+use \model\Cart;
+use \model\Address;
+use \model\Order;
+use \model\OrderStatus;
 use Rain\Tpl\Exception;
 
 $app = new Slim();
 
 //remove on release
-$app->config('debug', true);
+//$app->config('debug', true);
 
 require_once("index-admin.php");
+/**
+ * User Pages Routes
+ */
 
+/**
+ * Initial page Route
+ */
 $app->get('/', function() {
 	$products = Product::listAll();
 	$page = new Page();	
 	$page->setTpl("index",["products"=>Product::checkProduct($products)]);
-	//$sql = new dbfolder\DB\Sql();
+	//$sql = new model\DB\Sql();
 	//$result = $sql->select("SELECT * FROM tb_users");
 	//echo json_encode($result);
-
 });
 
+/**
+ * Category page route
+ * Show to user all itens in the choosen category
+ */
 $app->get("/category/:id",function($id){
 	 $pageNumber = (isset($_GET["page"]))?(int)$_GET["page"]:1;
 	 $category = new Category();
@@ -51,6 +60,10 @@ $app->get("/category/:id",function($id){
 
 });
 
+/**
+ * Product page route
+ * Show to user information about the choosen product
+ */
 $app->get("/products/:desurl",function($desurl){
 	$product = new Product();
 	$product->getFromUrl($desurl);
@@ -62,6 +75,13 @@ $app->get("/products/:desurl",function($desurl){
 	]);
 });
 
+/**
+ * CART ROUTES
+ */
+
+/**
+ * Show all items in user's cart
+ */
 $app->get("/cart",function(){
 	$cart = Cart::getSession();
 
@@ -71,6 +91,9 @@ $app->get("/cart",function(){
 	"error"=>Cart::getMsgError()]);
 });
 
+/**
+ * Add a product to the cart
+ */
 $app->get("/cart/:idproduct/add",function($idproduct){
 	$product = new Product();
 	$product->get((int)$idproduct);
@@ -83,6 +106,9 @@ $app->get("/cart/:idproduct/add",function($idproduct){
 	exit;
 });
 
+/**
+ * Remove ONE unit of a product from cart
+ */
 $app->get("/cart/:idproduct/removeone",function($idproduct){
 	$product = new Product();
 	$product->get((int)$idproduct);
@@ -92,18 +118,22 @@ $app->get("/cart/:idproduct/removeone",function($idproduct){
 	header("Location: /cart");
 	exit;
 });
+
+/**
+ * Remove ALL units of a product from cart
+ */
 $app->get("/cart/:idproduct/remove",function($idproduct){
 	$product = new Product();
 	$product->get((int)$idproduct);
-
 	$cart = Cart::getSession();
 	$cart->removeProduct($product,true);
 	header("Location: /cart");
 	exit;
 });
 
-//http://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx
-
+/**
+ * Set freight cost of order
+ */
 $app->post("/cart/freight",function(){
 
 	$cart = Cart::getSession();
@@ -114,6 +144,13 @@ $app->post("/cart/freight",function(){
 	exit;
 });
 
+/**
+ * END CART ROUTES
+ */
+
+/**
+ * Render Checkout Page
+ */
 $app->get("/checkout",function(){
 	User::verifyLogin(false);
 	$address = new Address();
@@ -144,6 +181,10 @@ $app->get("/checkout",function(){
 
 });
 
+/**
+ * Checkout order
+ * redirect to /order/$id page
+ */
 $app->post("/checkout",function(){
 	User::verifyLogin(false);
 	Address::clearMsgError();
@@ -184,6 +225,9 @@ $app->post("/checkout",function(){
 		
 });
 
+/**
+ * LOGIN PAGE ROUTES
+ */
 $app->get("/login",function(){
 	$page = new Page();
 	$page->setTpl("login",["error"=>User::getMsgError(),
@@ -193,20 +237,25 @@ $app->get("/login",function(){
 
 	
 });
-$app->post("/login",function(){
-	
-	$user = User::login($_POST["login"],$_POST["password"]);
-	
+$app->post("/login",function(){	
+	$user = User::login($_POST["login"],$_POST["password"]);	
 	header("Location:/");
 	exit;	
 });
 
+
+/**
+ * User logout route
+ */
 $app->get("/logout",function(){
 	User::logout();
 	header("Location:/login");
 	exit;
 });
 
+/**
+ * Register new user Route
+ */
 $app->post("/register",function(){
 	$_SESSION["registerValues"] = $_POST;
 
@@ -250,7 +299,10 @@ $app->post("/register",function(){
 	header("Location:/");
 	exit;
 });
-//FORGOT
+
+/**
+ * FORGOT PAGE ROUTES
+ */
 $app->get("/forgot",function(){
     $page = new Page();
 	$page->setTpl("forgot");
@@ -285,7 +337,13 @@ $app->post("/forgot/reset",function(){
 	$page = new Page();
     $page->setTpl("forgot-reset-success");
 });
+/**
+ * END FORGOT PAGE ROUTES
+ */
 
+/**
+ * USER PROFILE ROUTES
+ */
 $app->get("/profile",function(){
 	User::verifyLogin(false);
 	
@@ -333,7 +391,13 @@ $app->post("/profile",function(){
 	header("Location: /profile");
 	exit;
 });
+/** 
+ * END USER PROFILE ROUTES 
+ */
 
+/**
+ * Render order page
+ */
 $app->get("/order/:idorder",function($idorder){
 		User::verifyLogin(false);
 
@@ -344,12 +408,15 @@ $app->get("/order/:idorder",function($idorder){
 		$page->setTpl("payment",["order"=>$order->getValues()]);
 });
 
+//NOT IMPLEMENTED
 $app->get("/boleto/:idorder",function($idorder){
 		User::verifyLogin(false);
 
-
 });
 
+/**
+ * PROFILE PAGES ROUTES
+ */
 $app->get("/profile/orders",function(){
 		User::verifyLogin(false);
 		$user = User::getFromSession();
@@ -357,8 +424,8 @@ $app->get("/profile/orders",function(){
 		$page->setTpl("profile-orders",["orders"=>$user->getOrders()]);
 
 });
-$app->get("/profile/orders/:idorder",function($idorder){
 
+$app->get("/profile/orders/:idorder",function($idorder){
 		User::verifyLogin(false);
 		$order = new Order();
 		$order->get((int)$idorder);
@@ -424,9 +491,10 @@ $app->post("/profile/change-password",function(){
 
 		header("Location:/profile/change-password");
 		exit;
-
 });
-	
+/**
+ * END PROFILE PAGE ROUTES
+ */	
 
 //.htaccess else routes wont work
 $app->run();
